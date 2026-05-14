@@ -1,0 +1,29 @@
+Stuff to Do:
+- make more examples
+- create hidden harness for agents
+- add support for more forward-edge cases
+- create evaluation framework (false positive, # of fails before success, etc.)
+- Adversarial Agents (two phase)
+    - Policy Agent
+        - infers policy and instruments source
+    - Adversarial Agent
+        - inspect policy and generate attack tests
+        - can try targets outside allowed set, and uninstrumented call sites
+        - try same-signature unexpected functions
+        - try struct field overwrites, etc.
+        - metrics for agent
+            - number of attack attempts generated
+            - number blocked
+            - number succeeded
+            - number invalid / did not compile
+            - number of refinement rounds before success
+- after completion, make git diff file
+- add confidence metric (how confident agents are that they've solved vulnerabilities)
+    - if low confidence, secondary writeup as to why
+- make the write_file() not actually a write_file function
+    - make it output some .cfi file in json that'll edit the code
+    - or we can hook it into llvm pass
+- better logging
+- make snapshotting better (use git, docker, smth)
+- be able to solve maybe a small subset of backward-edge cases
+- compare against clang CFI

@@ -17,6 +17,9 @@ If tests indicate that an attack was NOT blocked, immediately tighten your targe
 Do not stop after a failed test — iterate until the policy passes or you've exhausted options.
 If a test fails, do NOT produce a final report. Instead, fix the instrumentation and retest. Only report when all tests pass or you cannot make further progress.
 
+Additionally, even if there are no failed tests, that does not mean there are no vulnerabilities.
+The absence of a failing test does not mean the code is secure. Attempt to fix all vulnerabilities by enforcing the tightest policy that keeps functionality.
+
 You may NOT view tests.sh files.
 When reporting test results, include the exact stdout, stderr, and exit status for each tested route. 
 Do not claim that CFI enforcement succeeded unless the attack route has explicit evidence of blocking: the unauthorized target must not execute, and the program must either print an authorization error or exit with a nonzero status.
