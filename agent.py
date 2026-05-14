@@ -5,9 +5,12 @@ from tools import (
     compile_to_llvm, compile_to_binary, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    instrument_CFI_checks, run_tests, log_steps, dump_clang_ast
+    write_file, run_tests, dump_clang_ast
 )
 from prompts import SYSTEM_PROMPT
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # mapping tool names to functions and their schemas
 TOOLS = {
@@ -21,10 +24,9 @@ TOOLS = {
     "find_function_pointer_typedefs": find_function_pointer_typedefs,
     "find_function_pointer_declarations": find_function_pointer_declarations,
     "find_pointer_assignments": find_pointer_assignments,
-    "instrument_CFI_checks": instrument_CFI_checks,
+    "write_file": write_file,
     "run_tests": run_tests,
     "dump_clang_ast": dump_clang_ast,
-    "log_steps": log_steps,
 }
 
 # tool schemas for OpenAI
@@ -36,6 +38,7 @@ TOOL_SCHEMAS = [
         "function" : {
             "name": "configure_toolchain",
             "description": "Ensure clang is downloaded",
+            "parameters": {"type": "object", "properties": {}}
         }
     },
 
@@ -202,18 +205,19 @@ TOOL_SCHEMAS = [
         }
     },
 
-    # INSTRUMENT_CFI_CHECKS
+    # WRITE_FILE
     {
         "type": "function",
         "function" : {
-            "name": "instrument_CFI_checks",
-            "description": "Add CFI checks to a .c source file",
+            "name": "write_file",
+            "description": "Add CFI checks to a .c source file by writing the entire source file, but it must have the same functionality",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "c_file": {"type": "string", "description": "Path to .c source file"},
+                    "content": {"type": "string", "description": "New .c file content"},
                 },
-                "required": ["c_file"]
+                "required": ["c_file", "content"]
             }
         }
     },
@@ -264,6 +268,7 @@ def run_agent(target_dir: str, max_steps: int = 20):
 
                 print(f"[Step {step}], agent calls {name}({args})")
                 result = TOOLS[name](**args)
+                log_steps(step, name, args, result)
 
                 messages.append({
                     "role": "tool",

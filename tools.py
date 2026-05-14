@@ -331,8 +331,21 @@ def find_pointer_assignments(c_file: str) -> list[str]:
 
     return pointer_assignments
 
-def instrument_CFI_checks():
-    return
+# def instrument_CFI_checks():
+#     return
+
+def write_file(c_file: str, content: str) -> dict:
+    try: 
+        Path(c_file).write_text(content)
+        return {
+            "ok": True,
+            "c_file": c_file
+        }
+    except Exception as err:
+        return {
+            "ok": False,
+            "error": str(err)
+        }
 
 def run_tests(folder: str) -> dict:
     scripts = Path(folder) / "tests.sh"
@@ -357,8 +370,21 @@ def run_tests(folder: str) -> dict:
         "stderr": results.stderr,
     }
 
-def log_steps():
-    return
+def log_steps(step: int, tool_name: str, args: dict, result: dict, log_dir: str = "logs") -> dict:
+    Path(log_dir).mkdir(exist_ok=True)
+    log_file = Path(log_dir) / "agent_log.jsonl"
+
+    entry = {
+        "step": step,
+        "tool": tool_name,
+        "args": args,
+        "result_preview": str(result)[:200],
+    }
+
+    with open(log_file, "a") as f:
+        f.write(json.dumps(entry) + "\n")
+        
+    return {"ok": True, "log_file": str(log_file)}
 
 
 def main():
