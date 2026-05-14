@@ -145,13 +145,13 @@ def find_indirect_calls(ll_file: str) -> list[str]:
         line = line.strip()
 
         if " call " in line or line.startswith("call "):
-            call_type = line.split("call", 1)[1].split("(", 1)[0]
-            if "@" not in call_type:
+            call_type = line.split("call", 1)[1]
+            if "@" not in call_type[:call_type.rfind("(")]:
                 indirect_calls.append(f"{ll_file}:{i}: {line}")
 
         elif " invoke " in line or line.startswith("invoke "):
-            invoke_type = line.split("invoke", 1)[1].split("(", 1)[0]
-            if "@" not in invoke_type:
+            invoke_type = line.split("invoke", 1)[1]
+            if "@" not in invoke_type[:invoke_type.rfind("(")]:
                 indirect_calls.append(f"{ll_file}:{i}: {line}")
     
     return indirect_calls
