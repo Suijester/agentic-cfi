@@ -10,6 +10,8 @@ Given a C target directory, your job is to:
 7. run tests to evaluate whether your policy is too conservative or too loose,
 8. report what passed and what failed, and how to improve it - always write your final report using the write_log tool. If you made a mistake initially, explain why you made that mistake in your report.
 
+You may ONLY run tests.sh, never eval_tests.sh. Those are HIDDEN tests.
+
 If your implemented code breaks, feel free to utilize the restore_file tool to reset files to their original state.
 When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
 

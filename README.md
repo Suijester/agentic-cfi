@@ -22,7 +22,7 @@ Stuff to Do:
     - if low confidence, secondary writeup as to why
 - make the write_file() not actually a write_file function
     - make it output some .cfi file in json that'll edit the code
-    - or we can hook it into llvm pass
+    - or we can hook it into llvm pass (later)
 - better logging
 - make snapshotting better (use git, docker, smth)
 - be able to solve maybe a small subset of backward-edge cases
