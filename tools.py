@@ -364,6 +364,23 @@ def write_log(content: str, log_filename: str) -> dict:
             "error": str(err)
         }
 
+def restore_file(file: str) -> dict:
+    try:
+        result = subprocess.run(
+            ["git", "restore", file],
+            capture_output = True, text = True
+        )
+        return {
+            "ok": result.returncode == 0,
+            "stdout": result.stdout,
+            "stderr": result.stderr,
+        }
+    except Exception as err:
+        return {
+            "ok": False,
+            "stderr": f"ERROR: {err}"
+        }
+
 '''
 def main():
     print(configure_toolchain())

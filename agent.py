@@ -5,7 +5,7 @@ from tools import (
     compile_to_llvm, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    write_file, run_tests, dump_clang_ast, write_log
+    write_file, run_tests, dump_clang_ast, write_log, restore_file
 )
 from prompts import SYSTEM_PROMPT
 from dotenv import load_dotenv
@@ -25,6 +25,7 @@ TOOLS = {
     "write_file": write_file,
     "run_tests": run_tests,
     "write_log": write_log,
+    "restore_file": restore_file,
 }
 
 # tool schemas for OpenAI
@@ -198,14 +199,30 @@ TOOL_SCHEMAS = [
         "type": "function",
         "function" : {
             "name": "write_log",
-            "description": "Write a log file with the final report.",
+            "description": "Write a log file with the final report",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "content": {"type": "string", "description": "New .log file content with report."},
+                    "content": {"type": "string", "description": "New .log file content with report"},
                     "log_filename": {"type": "string", "description": ".log file name to write into"}
                 },
                 "required": ["content", "log_filename"]
+            }
+        }
+    },
+
+    # RESTORE_FILE
+    {
+        "type": "function",
+        "function" : {
+            "name": "restore_file",
+            "description": "Restores file to original state",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "file": {"type": "string", "description": "Path to file to restore"},
+                },
+                "required": ["file"]
             }
         }
     },
@@ -217,7 +234,11 @@ def run_agent(target_dir: str, max_steps: int = 20):
     if not res["ok"]:
         print("ERR: toolchain not configured properly")
         return
-        
+
+    # restore all files so agent starts from clean baseline
+    for c_file in list_c_files(target_dir):
+        restore_file(c_file)
+
     client = OpenAI()
 
     messages = [
