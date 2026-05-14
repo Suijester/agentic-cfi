@@ -8,7 +8,7 @@ Given a C target directory, your job is to:
 5. generate a CFI policy,
 6. instrument runtime checks when possible,
 7. run tests to evaluate whether your policy is too conservative or too loose,
-8. report what passed and what failed, and how to improve it.
+8. report what passed and what failed, and how to improve it, by writing a log file.
 
 You may NOT view tests.sh files.
 When reporting test results, include the exact stdout, stderr, and exit status for each tested route. 

@@ -234,7 +234,7 @@ TOOL_SCHEMAS = [
                     "content": {"type": "string", "description": "New .log file content with report."},
                     "log_filename": {"type": "string", "description": ".log file name to write into"}
                 },
-                "required": ["content"]
+                "required": ["content", "log_filename"]
             }
         }
     },
