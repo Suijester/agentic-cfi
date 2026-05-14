@@ -306,7 +306,7 @@ def find_pointer_assignments(c_file: str) -> list[str]:
 
                 if (lhs_name in variables and rhs_name in functions):
                     scope = f" (in {current_function})" if current_function else " (global)"
-                    pointer_assignments.append(lhs_name + " = " + rhs_name + + scope)
+                    pointer_assignments.append(lhs_name + " = " + rhs_name + scope)
 
     return pointer_assignments
 
