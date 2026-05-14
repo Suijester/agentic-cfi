@@ -386,7 +386,7 @@ def log_steps(step: int, tool_name: str, args: dict, result: dict, log_dir: str 
         
     return {"ok": True, "log_file": str(log_file)}
 
-
+'''
 def main():
     print(configure_toolchain())
 
@@ -407,3 +407,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+'''

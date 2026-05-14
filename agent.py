@@ -5,7 +5,7 @@ from tools import (
     compile_to_llvm, compile_to_binary, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    write_file, run_tests, dump_clang_ast
+    write_file, run_tests, dump_clang_ast, log_steps
 )
 from prompts import SYSTEM_PROMPT
 from dotenv import load_dotenv
