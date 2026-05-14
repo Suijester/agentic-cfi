@@ -194,8 +194,17 @@ def dump_clang_ast(c_file: str) -> dict:
         "stderr": result.stderr,
     }
 
-def walk_clang_ast(nodes: dict) -> list[str]:
-    return
+def walk_clang_ast(node: dict):
+    if node is None:
+        return
+
+    stack = [node]
+    while (stack):
+        node = stack.pop()
+        yield node
+
+        child = node.get("inner", [])
+        stack.extend(reversed(child))
 
 def find_function_declarations(c_file: str) -> list[str]:
     return
