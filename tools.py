@@ -198,9 +198,10 @@ def walk_clang_ast(node: dict):
     if node is None:
         return
 
-    stack = [(node, "")]
-    while (stack):
-        current_node, current_file = stack.pop()
+    stack = [node]
+    current_file = ""
+    while stack:
+        current_node = stack.pop()
         location = current_node.get("loc", {})
         if "file" in location:
             current_file = location["file"]
@@ -210,7 +211,7 @@ def walk_clang_ast(node: dict):
 
         children = current_node.get("inner", [])
         for child in reversed(children):
-            stack.append((child, current_file))
+            stack.append(child)
 
 def find_function_declarations(c_file: str) -> list[str]:
     result = dump_clang_ast(c_file)
@@ -317,12 +318,23 @@ def run_tests(folder: str) -> dict:
 def log_steps():
     return
 
-'''
+
 def main():
-    list_c_files("targets/example1")
-    read_c_file("targets/example1/main.c")
-    compile_to_llvm("targets/example1/main.c")
+    print(configure_toolchain())
+
+    print(list_c_files("targets/example1"))
+    # print(read_c_file("targets/example1/example1.c"))
+
+    compile_to_llvm("targets/example1/example1.c")
+    print(find_indirect_calls("outputs/example1.ll"))
+
+    result = dump_clang_ast("targets/example1/example1.c")
+    print(result["ok"])
+    print(result["stderr"])
+
+    print(find_function_declarations("targets/example1/example1.c"))
+    print(find_function_pointer_typedefs("targets/example1/example1.c"))
+    print(find_function_pointer_declarations("targets/example1/example1.c"))
 
 if __name__ == "__main__":
     main()
-'''

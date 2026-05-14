@@ -5,7 +5,7 @@ cd "$(dirname "$0")"
 mkdir -p build
 
 echo "Building program."
-clang -O0 -g -Wall -Wextra main.c -o build/example1
+clang -O0 -g -Wall -Wextra example1.c -o build/example1
 
 echo "Testing safe route."
 out=$(./build/example1 safe)
