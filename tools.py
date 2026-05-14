@@ -235,9 +235,50 @@ def find_function_declarations(c_file: str) -> list[str]:
 
     return functions
 
+def find_function_pointer_typedefs(c_file: str) -> list[str]:
+    result = dump_clang_ast(c_file)
 
-def find_function_pointer_declarations():
-    return
+    if (result.get("ok") == False):
+        return [f"ERROR: failed to dump clang ast; {result.get('stderr')}"]
+
+    ast = result.get("ast")
+    typedefs = []
+
+    # only use the file name (strip path)
+    target_file = Path(c_file).name
+
+    for node, file_path in walk_clang_ast(ast):
+        if node.get("kind") == "TypedefDecl" and node.get("name") is not None:
+            if target_file == Path(file_path).name:
+                qualType = node.get("type", {}).get("qualType", "")
+                if ("(*)" in qualType) or ("(*" in qualType and ")" in qualType):
+                    typedefs.append(node.get("name"))
+
+    return typedefs
+
+def find_function_pointer_declarations(c_file: str) -> list[str]:
+    typedefs = find_function_pointer_typedefs(c_file)
+    result = dump_clang_ast(c_file)
+
+    if (result.get("ok") == False):
+        return [f"ERROR: failed to dump clang ast; {result.get('stderr')}"]
+    
+    ast = result.get("ast")
+
+    # only use the file name (strip path)
+    target_file = Path(c_file).name
+
+    variables = []
+    for node, file_path in walk_clang_ast(ast):
+        if node.get("kind") == "VarDecl" and node.get("name") is not None:
+            if target_file == Path(file_path).name:
+                name = node.get("name")
+                var_type = node.get("type", {})
+                qualType = var_type.get("qualType", "")
+                if (any(typedef in qualType for typedef in typedefs) or ("(*)" in qualType)):
+                    variables.append(name);
+    
+    return variables
 
 def find_pointer_assignments(c_file: str) -> list[str]:
     return
