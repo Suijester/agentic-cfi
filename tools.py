@@ -79,7 +79,7 @@ def configure_toolchain() -> dict:
 def list_c_files(folder: str) -> list[str]:
     return [str(file) for file in Path(folder).glob("*.c") if file.is_file()]
 
-def read_c_file(file: str, max_chars: int = 15000) -> str:
+def read_file(file: str, max_chars: int = 15000) -> str:
     text = Path(file).read_text(errors = "ignore")
     return text[:max_chars]
 
@@ -281,13 +281,55 @@ def find_function_pointer_declarations(c_file: str) -> list[str]:
     
     return variables
 
+def find_DeclRefExpr_helper(node: dict) -> dict | None:
+    if node is None:
+        return None
+
+    if node.get("kind") == "DeclRefExpr":
+        return node
+    
+    children = node.get("inner", [])
+    for child in children:
+        result = find_DeclRefExpr_helper(child)
+        if result is not None:
+            return result
+    
+    return None
+
 def find_pointer_assignments(c_file: str) -> list[str]:
-    return
+    variables = find_function_pointer_declarations(c_file)
+    functions = find_function_declarations(c_file)
 
+    result = dump_clang_ast(c_file)
 
+    if (result.get("ok") == False):
+        return [f"ERROR: failed to dump clang ast; {result.get('stderr')}"]
+    
+    ast = result.get("ast")
 
-def infer_target_sets():
-    return
+    # only use the file name (strip path)
+    target_file = Path(c_file).name
+
+    pointer_assignments = []
+    for node, file_path in walk_clang_ast(ast):
+        if node.get("kind") == "BinaryOperator":
+            if node.get("opcode") == "=" and target_file == Path(file_path).name:
+                children = node.get("inner", [])
+                if (len(children) < 2):
+                    continue
+
+                lhs_node = find_DeclRefExpr_helper(children[0])
+                rhs_node = find_DeclRefExpr_helper(children[1])
+                if (lhs_node is None or rhs_node is None):
+                    continue
+
+                lhs_name = lhs_node.get("name") or lhs_node.get("referencedDecl", {}).get("name")
+                rhs_name = rhs_node.get("name") or rhs_node.get("referencedDecl", {}).get("name")
+
+                if (lhs_name in variables and rhs_name in functions):
+                    pointer_assignments.append(lhs_name + " = " + rhs_name)
+
+    return pointer_assignments
 
 def instrument_CFI_checks():
     return
@@ -335,6 +377,7 @@ def main():
     print(find_function_declarations("targets/example1/example1.c"))
     print(find_function_pointer_typedefs("targets/example1/example1.c"))
     print(find_function_pointer_declarations("targets/example1/example1.c"))
+    print(find_pointer_assignments("targets/example1/example1.c"))
 
 if __name__ == "__main__":
     main()
