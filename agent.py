@@ -26,7 +26,6 @@ TOOLS = {
     "find_pointer_assignments": find_pointer_assignments,
     "write_file": write_file,
     "run_tests": run_tests,
-    "dump_clang_ast": dump_clang_ast,
 }
 
 # tool schemas for OpenAI
@@ -121,22 +120,6 @@ TOOL_SCHEMAS = [
                     "ll_file": {"type": "string", "description": "Path to the .ll file"},
                 },
                 "required": ["ll_file"]
-            }
-        }
-    },
-
-    # DUMP_CLANG_AST
-    {
-        "type": "function",
-        "function" : {
-            "name": "dump_clang_ast",
-            "description": "Output AST .json file from .c source file",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "c_file": {"type": "string", "description": "Path to the .c source file"},
-                },
-                "required": ["c_file"]
             }
         }
     },
