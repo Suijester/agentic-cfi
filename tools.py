@@ -198,16 +198,43 @@ def walk_clang_ast(node: dict):
     if node is None:
         return
 
-    stack = [node]
+    stack = [(node, "")]
     while (stack):
-        node = stack.pop()
-        yield node
+        current_node, current_file = stack.pop()
+        location = current_node.get("loc", {})
+        if "file" in location:
+            current_file = location["file"]
 
-        child = node.get("inner", [])
-        stack.extend(reversed(child))
+        # generator funct so we can parse all nodes in AST order
+        yield current_node, current_file 
+
+        children = current_node.get("inner", [])
+        for child in reversed(children):
+            stack.append((child, current_file))
 
 def find_function_declarations(c_file: str) -> list[str]:
-    return
+    result = dump_clang_ast(c_file)
+
+    if (result.get("ok") == False):
+        return [f"ERROR: failed to dump clang ast; {result.get('stderr')}"]
+
+    ast = result.get("ast")
+    functions = []
+
+    # only use the file name (strip path)
+    target_file = Path(c_file).name
+
+    for node, file_path in walk_clang_ast(ast):
+        if node.get("kind") == "FunctionDecl" and node.get("name") is not None:
+            if target_file == Path(file_path).name:
+                children = node.get("inner", [])
+                has_body = any(child.get("kind") == "CompoundStmt" for child in children)
+
+                if (has_body):
+                    functions.append(node.get("name"))
+
+    return functions
+
 
 def find_function_pointer_declarations():
     return
