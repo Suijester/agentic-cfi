@@ -381,6 +381,24 @@ def restore_file(file: str) -> dict:
             "stderr": f"ERROR: {err}"
         }
 
+def generate_cfg(c_file: str):
+    return
+
+def find_callers(c_file: str, function_name: str):
+    return
+
+def find_struct_field_accesses(c_file: str):
+    return
+
+def compile_and_run(c_file: str):
+    return
+
+def find_type_compatible_functions(c_file: str, signature: str):
+    return
+
+def run_command(cmd: str):
+    return
+
 '''
 def main():
     print(configure_toolchain())
