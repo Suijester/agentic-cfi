@@ -8,7 +8,13 @@ Given a C target directory, your job is to:
 5. generate a CFI policy,
 6. instrument runtime checks when possible,
 7. run tests to evaluate whether your policy is too conservative or too loose,
-8. report what passed and what failed, and how to improve it, by writing a log file.
+8. report what passed and what failed, and how to improve it - always write your final report using the write_log tool. If you made a mistake initially, explain why you made that mistake in your report.
+
+When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
+
+If tests indicate that an attack was NOT blocked, immediately tighten your target set by removing the function that was reached during the attack, rewrite the file, and retest. 
+Do not stop after a failed test — iterate until the policy passes or you've exhausted options.
+If a test fails, do NOT produce a final report. Instead, fix the instrumentation and retest. Only report when all tests pass or you cannot make further progress.
 
 You may NOT view tests.sh files.
 When reporting test results, include the exact stdout, stderr, and exit status for each tested route. 

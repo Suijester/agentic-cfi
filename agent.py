@@ -2,7 +2,7 @@ import json
 from openai import OpenAI
 from tools import (
     configure_toolchain, list_c_files, read_file, 
-    compile_to_llvm, compile_to_binary, find_indirect_calls,
+    compile_to_llvm, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
     write_file, run_tests, dump_clang_ast, write_log
@@ -14,11 +14,9 @@ load_dotenv()
 
 # mapping tool names to functions and their schemas
 TOOLS = {
-    "configure_toolchain": configure_toolchain,
     "list_c_files": list_c_files,
     "read_file": read_file,
     "compile_to_llvm": compile_to_llvm,
-    "compile_to_binary": compile_to_binary,
     "find_indirect_calls": find_indirect_calls,
     "find_function_declarations": find_function_declarations,
     "find_function_pointer_typedefs": find_function_pointer_typedefs,
@@ -32,16 +30,6 @@ TOOLS = {
 # tool schemas for OpenAI
 # region
 TOOL_SCHEMAS = [
-    # CONFIGURE_TOOLCHAIN
-    {
-        "type": "function",
-        "function" : {
-            "name": "configure_toolchain",
-            "description": "Ensure clang is downloaded",
-            "parameters": {"type": "object", "properties": {}}
-        }
-    },
-
     # LIST_C_FILES
     {
         "type": "function",
@@ -86,23 +74,6 @@ TOOL_SCHEMAS = [
                 "properties": {
                     "c_file": {"type": "string", "description": "Path to the .c source file"},
                     "out_dir": {"type": "string", "description": "Path to output LL file directory"},
-                },
-                "required": ["c_file"]
-            }
-        }
-    },
-
-    # COMPILE_TO_BINARY
-    {
-        "type": "function",
-        "function" : {
-            "name": "compile_to_binary",
-            "description": "Compile .c source file to binary file",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "c_file": {"type": "string", "description": "Path to the .c source file"},
-                    "out_dir": {"type": "string", "description": "Path to output binary file directory"},
                 },
                 "required": ["c_file"]
             }
@@ -242,6 +213,11 @@ TOOL_SCHEMAS = [
 # endregion
 
 def run_agent(target_dir: str, max_steps: int = 20):
+    res = configure_toolchain();
+    if not res["ok"]:
+        print("ERR: toolchain not configured properly")
+        return
+        
     client = OpenAI()
 
     messages = [
@@ -267,7 +243,7 @@ def run_agent(target_dir: str, max_steps: int = 20):
                 name = tool_call.function.name
                 args = json.loads(tool_call.function.arguments)
 
-                print(f"[Step {step}], agent calls {name}({args})")
+                print(f"[Step {step}], agent calls {name}()")
                 result = TOOLS[name](**args)
 
                 messages.append({

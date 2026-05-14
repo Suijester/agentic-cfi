@@ -110,33 +110,6 @@ def compile_to_llvm(c_file: str, out_dir: str = "outputs") -> dict:
         "stderr": result.stderr,
     }
 
-def compile_to_binary(c_file: str, out_dir: str = "outputs") -> dict:
-    out = Path(out_dir)
-    out.mkdir(exist_ok = True)
-
-    bin_file = out / (Path(c_file).stem)
-    
-    # standard compilation command
-    compile_command = [
-        "clang",
-        "-O0",
-        "-g",
-        "-Wall",
-        "-Wextra",
-        c_file,
-        "-o",
-        str(bin_file)
-    ]
-
-    result = subprocess.run(compile_command, capture_output = True, text = True)
-    return {
-        "ok": result.returncode == 0,
-        "cmd": " ".join(compile_command),
-        "bin_file": str(bin_file),
-        "stdout": result.stdout,
-        "stderr": result.stderr
-    }
-
 def find_indirect_calls(ll_file: str) -> list[str]:
     text = Path(ll_file).read_text(errors = "ignore")
     indirect_calls = []
@@ -311,7 +284,12 @@ def find_pointer_assignments(c_file: str) -> list[str]:
     target_file = Path(c_file).name
 
     pointer_assignments = []
+    current_function = None
+
     for node, file_path in walk_clang_ast(ast):
+        if node.get("kind") == "FunctionDecl" and target_file == Path(file_path).name:
+            current_function = node.get("name")
+
         if node.get("kind") == "BinaryOperator":
             if node.get("opcode") == "=" and target_file == Path(file_path).name:
                 children = node.get("inner", [])
@@ -327,7 +305,8 @@ def find_pointer_assignments(c_file: str) -> list[str]:
                 rhs_name = rhs_node.get("name") or rhs_node.get("referencedDecl", {}).get("name")
 
                 if (lhs_name in variables and rhs_name in functions):
-                    pointer_assignments.append(lhs_name + " = " + rhs_name)
+                    scope = f" (in {current_function})" if current_function else " (global)"
+                    pointer_assignments.append(lhs_name + " = " + rhs_name + + scope)
 
     return pointer_assignments
 
