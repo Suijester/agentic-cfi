@@ -17,10 +17,12 @@ out=$(./build/example1 admin)
 echo "$out"
 grep -q "ADMIN: admin_handler reached." <<< "$out"
 
-echo "Testing hijacking route."
-out=$(./build/example1 attack)
+if out=$(./build/example1 attack 2>&1); then
+    echo "FAIL: attack should have been blocked"
+    exit 1
+fi
 echo "$out"
-grep -q "UNSAFE: debug_shell reached." <<< "$out"
+echo "Attack was blocked as expected."
 
 echo
 echo "Normal tests passed!"

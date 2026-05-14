@@ -6,3 +6,4 @@ targets/*/build/
 .env
 logs/
 targets/*/*.ll
+targets/*/bin

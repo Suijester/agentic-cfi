@@ -10,6 +10,10 @@ Given a C target directory, your job is to:
 7. run tests to evaluate whether your policy is too conservative or too loose,
 8. report what passed and what failed, and how to improve it.
 
+You may NOT view tests.sh files.
+When reporting test results, include the exact stdout, stderr, and exit status for each tested route. 
+Do not claim that CFI enforcement succeeded unless the attack route has explicit evidence of blocking: the unauthorized target must not execute, and the program must either print an authorization error or exit with a nonzero status.
+
 Do not try to guess whether a function is malicious based on names, and focus on constructing target sets.
 If static evidence is ambiguous, identify that ambiguity in your report and state any assumptions you make, and avoid silently excluding targets without justification.
 Focus purely on forward-edge CFI, or CFI for function calls through indirect function pointers. 

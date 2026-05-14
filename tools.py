@@ -370,21 +370,20 @@ def run_tests(folder: str) -> dict:
         "stderr": results.stderr,
     }
 
-def log_steps(step: int, tool_name: str, args: dict, result: dict, log_dir: str = "logs") -> dict:
-    Path(log_dir).mkdir(exist_ok=True)
-    log_file = Path(log_dir) / "agent_log.jsonl"
-
-    entry = {
-        "step": step,
-        "tool": tool_name,
-        "args": args,
-        "result_preview": str(result)[:200],
-    }
-
-    with open(log_file, "a") as f:
-        f.write(json.dumps(entry) + "\n")
-        
-    return {"ok": True, "log_file": str(log_file)}
+def write_log(content: str, log_filename: str) -> dict:
+    try:
+        Path("logs").mkdir(exist_ok = True)
+        log_path = Path("logs") / log_filename
+        log_path.write_text(content)
+        return {
+            "ok": True,
+            "log_file": str(log_path)
+        }
+    except Exception as err:
+        return {
+            "ok": False,
+            "error": str(err)
+        }
 
 '''
 def main():

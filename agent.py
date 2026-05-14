@@ -5,7 +5,7 @@ from tools import (
     compile_to_llvm, compile_to_binary, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    write_file, run_tests, dump_clang_ast, log_steps
+    write_file, run_tests, dump_clang_ast, write_log
 )
 from prompts import SYSTEM_PROMPT
 from dotenv import load_dotenv
@@ -26,6 +26,7 @@ TOOLS = {
     "find_pointer_assignments": find_pointer_assignments,
     "write_file": write_file,
     "run_tests": run_tests,
+    "write_log": write_log,
 }
 
 # tool schemas for OpenAI
@@ -220,6 +221,23 @@ TOOL_SCHEMAS = [
             }
         }
     },
+
+    # WRITE_LOG
+    {
+        "type": "function",
+        "function" : {
+            "name": "write_log",
+            "description": "Write a log file with the final report.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "content": {"type": "string", "description": "New .log file content with report."},
+                    "log_filename": {"type": "string", "description": ".log file name to write into"}
+                },
+                "required": ["content"]
+            }
+        }
+    },
 ]
 # endregion
 
@@ -251,7 +269,6 @@ def run_agent(target_dir: str, max_steps: int = 20):
 
                 print(f"[Step {step}], agent calls {name}({args})")
                 result = TOOLS[name](**args)
-                log_steps(step, name, args, result)
 
                 messages.append({
                     "role": "tool",
