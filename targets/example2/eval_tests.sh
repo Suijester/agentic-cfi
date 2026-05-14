@@ -20,7 +20,7 @@ clang -O0 /tmp/example2_patched.c -o "$BIN" 2>/dev/null
 
 OUT=$("$BIN" 2>&1)
 
-if echo "$OUT" | grep -q "maintenace"; then
+if echo "$OUT" | grep -q "maintenance"; then
     echo "FAIL: backdoor is reachable"
     exit 1
 else
