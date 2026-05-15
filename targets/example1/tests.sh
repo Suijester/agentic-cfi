@@ -2,22 +2,26 @@
 set -euo pipefail
 
 cd "$(dirname "$0")"
-mkdir -p build
 
-echo "Building program."
-clang -O0 -g -Wall -Wextra example1.c -o build/example1
+BIN="bin/example1_cfi"
+
+if [ ! -f "$BIN" ]; then
+    echo "ERROR: hardened binary not found at $BIN"
+    echo "Run the agent to produce a policy and apply the LLVM pass first."
+    exit 1
+fi
 
 echo "Testing safe route."
-out=$(./build/example1 safe)
+out=$(./"$BIN" safe)
 echo "$out"
 grep -q "SAFE: safe_handler reached." <<< "$out"
 
 echo "Testing admin route."
-out=$(./build/example1 admin)
+out=$(./"$BIN" admin)
 echo "$out"
 grep -q "ADMIN: admin_handler reached." <<< "$out"
 
-if out=$(./build/example1 attack 2>&1); then
+if out=$(./"$BIN" attack 2>&1); then
     echo "FAIL: attack should have been blocked"
     exit 1
 fi

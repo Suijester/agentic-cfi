@@ -5,7 +5,8 @@ from tools import (
     compile_to_llvm, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    write_file, run_tests, dump_clang_ast, write_log
+    write_file, run_tests, dump_clang_ast, write_log,
+    write_policy, compile_llvm_pass, policy_to_llvm_pass
 )
 from prompts import BLUE_PROMPT
 from dotenv import load_dotenv
