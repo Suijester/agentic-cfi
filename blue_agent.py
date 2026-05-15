@@ -64,7 +64,7 @@ def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):
 
     for step in range(max_steps):
         response = client.chat.completions.create(
-            model = "gpt-4o",
+            model = "gpt-4o-mini",
             messages = messages,
             tools = BLUE_SCHEMAS,
         )

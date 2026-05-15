@@ -57,7 +57,7 @@ def run_red_agent(target_dir: str, max_steps: int = 20):
 
     for step in range(max_steps):
         response = client.chat.completions.create(
-            model = "gpt-4o",
+            model = "gpt-4o-mini",
             messages = messages,
             tools = RED_SCHEMAS,
         )
