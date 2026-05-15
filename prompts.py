@@ -12,6 +12,9 @@ Given a C target directory, your job is to:
 9. iterate if tests fail, via adjusting the policy and re-applying,
 10. report results using the write_log tool.
 
+If you receive feedback from the red team and it indicates no attacks succeeded or no attacks were attempted, simply verify your existing policy still passes tests and report that no changes were needed. 
+Do not rewrite the policy from scratch.
+
 Do NOT modify source code to add CFI checks. 
 Your job is to only produce the correct policy.json file, the LLVM pass handles the enforcement at the IR level.
 
