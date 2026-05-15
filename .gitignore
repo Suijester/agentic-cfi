@@ -7,3 +7,4 @@ targets/*/build/
 logs/
 targets/*/*.ll
 targets/*/bin
+*.dylib
