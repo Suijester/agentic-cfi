@@ -66,6 +66,16 @@ Rules:
 - your harness MUST be compiled through the LLVM pass (use policy_to_llvm_pass) to prove it bypasses CFI.
 - invalid attacks: modifying source, removing the pass, exploiting UB unrelated to CFI.
 
+Your attack harness MUST be a single, self-contained .c file. To access target functions, use #include with the target source, and to avoid duplicating main(), rename it before including:
+
+#define main target_main
+#include "../example1/example1.c"
+#undef main
+
+int main(void) {
+    // your attack code
+}
+
 The blue agent enforces CFI at the LLVM IR level via the compiler pass.
 Source-level bypasses (calling past a guard function, etc.) will be insufficient. 
 Focus on whether the policy's allowed_targets is too loose.
