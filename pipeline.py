@@ -6,6 +6,7 @@ import subprocess
 
 def git(*args):
     subprocess.run(["git"] + list(args), check = True)
+    return result.returncode == 0
 
 def run_pipeline(target_dir: str):
     target_name = target_dir.strip("/").split("/")[-1]

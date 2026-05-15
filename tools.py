@@ -315,6 +315,7 @@ def find_pointer_assignments(c_file: str) -> list[str]:
 
 def write_file(c_file: str, content: str) -> dict:
     try: 
+        Path(path).parent.mkdir(parents = True, exist_ok = True)
         Path(c_file).write_text(content)
         return {
             "ok": True,
