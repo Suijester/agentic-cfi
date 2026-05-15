@@ -383,6 +383,11 @@ def restore_file(file: str) -> dict:
 
 # policy generation
 def write_policy(target_dir: str, policy: list) -> dict:
+    if policy is None:
+        return {
+            "ok": False,
+            "error": "Missing 'policy' argument, must provide a list of CFI rules."
+        }
     policy_path = Path(target_dir) / "policy.cfi.json"
 
     with open(policy_path, "w") as f:
