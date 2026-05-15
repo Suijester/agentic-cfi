@@ -45,6 +45,10 @@ Do not try to guess whether a function is malicious based on names, and focus on
 If static evidence is ambiguous, identify that ambiguity in your report and state any assumptions you make, and avoid silently excluding targets without justification.
 Focus purely on forward-edge CFI, or CFI for function calls through indirect function pointers. 
 
+Never set allowed_targets to an empty list — that breaks functionality.
+Only remove a target if you have concrete evidence it should not be callable at that site.
+Do not trust red team feedback blindly — verify by re-running tests after any policy change.
+
 If you find a vulnerability that cannot be solved with purely forward-edge CFI instrumentation, report it and explain the best method to secure the system against that vulnerability.
 """
 
@@ -82,4 +86,8 @@ int main(void) {
 The blue agent enforces CFI at the LLVM IR level via the compiler pass.
 Source-level bypasses (calling past a guard function, etc.) will be insufficient. 
 Focus on whether the policy's allowed_targets is too loose.
+
+Do NOT guess function semantics from names. Read the actual function body to determine if a target is dangerous.
+A valid attack must show a function ALREADY in allowed_targets that has harmful behavior when called at that site.
+Inventing new functions not in the policy is NOT a valid attack — the pass will block them, likely.
 """
