@@ -180,6 +180,54 @@ TOOL_SCHEMAS_LIST = [
             }
         }
     },
+
+    # WRITE_POLICY
+    {
+        "type": "function",
+        "function" : {
+            "name": "write_policy",
+            "description": "Write a CFI policy JSON file for the target. The policy is a list of rules, with a 'caller' (function name), 'call_index' (0-based index of indirect call in that function), and 'allowed_targets' (list of function names that are valid targets)",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "target_dir": {"type": "string", "description": "Path to target directory"},
+                    "policy": {"type": "array", "description": "List of CFI rules", "items": {"type": "object"}}
+                },
+                "required": ["target_dir", "policy"]
+            }
+        }
+    },
+
+    # COMPILE_LLVM_PASS
+    {
+        "type": "function",
+        "function" : {
+            "name": "compile_llvm_pass",
+            "description": "Compile the CFI LLVM pass into a shared library, only needs to be called once",
+            "parameters": {
+                "type": "object",
+                "properties": {},
+                "required": []
+            }
+        }
+    },
+
+    # POLICY_TO_LLVM_PASS
+    {
+        "type": "function",
+        "function" : {
+            "name": "policy_to_llvm_pass",
+            "description": "Apply the CFI LLVM pass to a C file using a policy. Compiles C to IR, executes the CFI policy, and links into a binary. Returns path to hardened binary.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "c_file": {"type": "string", "description": "Path to C source file"},
+                    "policy_file": {"type": "string", "description": "Path to policy.json file"}
+                },
+                "required": ["c_file", "policy_file"]
+            }
+        }
+    },
 ]
 
 TOOL_SCHEMAS = {

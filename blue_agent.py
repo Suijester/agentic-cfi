@@ -1,7 +1,7 @@
 import json
 from openai import OpenAI
 from tools import (
-    configure_toolchain, list_c_files, read_file, 
+    compile_llvm_pass, configure_toolchain, list_c_files, policy_to_llvm_pass, read_file, 
     compile_to_llvm, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
@@ -27,13 +27,17 @@ TOOLS = {
     "write_file": write_file,
     "run_tests": run_tests,
     "write_log": write_log,
+    "write_policy": write_policy,
+    "compile_llvm_pass": compile_llvm_pass,
+    "policy_to_llvm_pass": policy_to_llvm_pass,
 }
 
 BLUE_SCHEMAS = [TOOL_SCHEMAS[t] for t in [
     "list_c_files", "read_file", "compile_to_llvm",
     "find_indirect_calls", "find_function_declarations", 
     "find_function_pointer_typedefs", "find_function_pointer_declarations",
-    "find_pointer_assignments", "write_file", "run_tests", "write_log"
+    "find_pointer_assignments", "write_file", "run_tests", "write_log",
+    "write_policy", "compile_llvm_pass", "policy_to_llvm_pass"
 ]]
 
 def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):

@@ -381,6 +381,81 @@ def restore_file(file: str) -> dict:
             "stderr": f"ERROR: {err}"
         }
 
+# policy generation
+def write_policy(target_dir: str, policy: list) -> dict:
+    policy_path = Path(target_dir) / "policy.cfi.json"
+
+    with open(policy_path, "w") as f:
+        json.dump(policy, f, indent = 2)
+
+    return {
+        "ok": True,
+        "path": str(policy_path),
+    }
+
+def compile_llvm_pass() -> dict:
+    llvm_lib = Path("cfi_pass.dylib")
+    if llvm_lib.exists():
+        return {
+            "ok": True, 
+            "path": str(llvm_lib),
+        }
+
+    result = subprocess.run(
+        "clang++ -shared -fPIC cfi_pass.cpp -o cfi_pass.dylib "
+        "$(llvm-config --cxxflags --ldflags --libs core support passes) "
+        " -undefined dynamic_lookup",
+        shell = True, capture_output = True, text = True
+    )
+
+    return {
+        "ok": result.returncode == 0,
+        "path": str(llvm_lib)
+    }
+
+def policy_to_llvm_pass(c_file: str, policy_file: str) -> dict:
+    stem = Path(c_file).stem
+    target_dir = str(Path(c_file).parent)
+    bin_dir = Path(target_dir) / "bin"
+    bin_dir.mkdir(exist_ok = True)
+
+    ll_file = bin_dir / f"{stem}.ll"
+    cfi_ll = bin_dir / f"{stem}_cfi.ll"
+    binary = bin_dir / f"{stem}_cfi"
+
+    # convert c to the IR representation
+    result = subprocess.run(["clang", "-S", "-emit-llvm", c_file, "-o", str(ll_file)], capture_output = True, text = True)
+    if result.returncode != 0:
+        return {
+            "ok": False,
+            "fail_stage": "compile_to_ir",
+            "stderr": result.stderr,
+        }
+
+    # run the pass
+    result = subprocess.run(["opt", "-load-pass-plugin=./cfi_pass.dylib", "-passes=cfi-enforce", f"-cfi-policy={policy_file}", str(ll_file), "-S", "-o",str(cfi_ll)], capture_output = True, text = True)
+    if result.returncode != 0:
+        return {
+            "ok": False,
+            "fail_stage": "run_pass",
+            "stderr": result.stderr,
+        }
+
+    # convert IR to binary
+    result = subprocess.run(["clang", str(cfi_ll), "-o", str(binary)], capture_output = True, text = True)
+    if result.returncode != 0:
+        return {
+            "ok": False,
+            "fail_stage": "convert_IR_to_binary",
+            "stderr": result.stderr,
+        }
+
+    return {
+        "ok": True,
+        "binary": str(binary)
+    }
+
+# advanced tools 
 def generate_cfg(c_file: str):
     return
 
