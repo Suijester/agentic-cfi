@@ -186,12 +186,28 @@ TOOL_SCHEMAS_LIST = [
         "type": "function",
         "function" : {
             "name": "write_policy",
-            "description": "Write a CFI policy JSON file for the target. The policy is a list of rules, with a 'caller' (function name), 'call_index' (0-based index of indirect call in that function), and 'allowed_targets' (list of function names that are valid targets)",
+            "description": "Write a CFI policy JSON file for the target.",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "target_dir": {"type": "string", "description": "Path to target directory"},
-                    "policy": {"type": "array", "description": "List of CFI rules", "items": {"type": "object"}}
+                    "policy": {
+                        "type": "array",
+                        "description": "List of CFI rules",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "caller": {"type": "string", "description": "Function containing the indirect call"},
+                                "call_index": {"type": "integer", "description": "0-based index of indirect call within the overall function"},
+                                "allowed_targets": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Function names that are allowed to be called at this site"
+                                }
+                            },
+                            "required": ["caller", "call_index", "allowed_targets"]
+                        }
+                    }
                 },
                 "required": ["target_dir", "policy"]
             }

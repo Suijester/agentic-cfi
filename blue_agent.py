@@ -79,7 +79,13 @@ def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):
                 args = json.loads(tool_call.function.arguments)
 
                 print(f"[Step {step}], agent calls {name}()")
-                result = TOOLS[name](**args)
+                try:
+                    result = TOOLS[name](**args)
+                except Exception as err:
+                    result = {
+                        "ok": False,
+                        "error": f"{type(err).__name__}: {err}"
+                    }
 
                 messages.append({
                     "role": "tool",
