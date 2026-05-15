@@ -6,7 +6,6 @@ import subprocess
 
 def git(*args):
     subprocess.run(["git"] + list(args), check = True)
-    return result.returncode == 0
 
 def run_pipeline(target_dir: str):
     target_name = target_dir.strip("/").split("/")[-1]
@@ -17,13 +16,13 @@ def run_pipeline(target_dir: str):
     run_blue_agent(target_dir)
 
     git("add", "-A")
-    git("commit", "-m", f"blue agent: {target_name}")
+    git("commit", "--allow-empty", "-m", f"blue agent: {target_name}")
 
     git("checkout", "-B", f"red/{target_name}")
     run_red_agent(target_dir)
     
     git("add", "-A")
-    git("commit", "-m", f"red agent: {target_name}")
+    git("commit", "--allow-empty", "-m", f"red agent: {target_name}")
 
     # git merge red -> blue so blue has red's attacks and logs
     git("checkout", f"blue/{target_name}")
@@ -35,7 +34,7 @@ def run_pipeline(target_dir: str):
         # round 2: blue uses adversarial red data to improve itself
         run_blue_agent(target_dir, feedback = "Red-team attack harnesses are added. Review attacks/, the new .c source files, and the logs of those attacks. Using that, improve your CFI to block those attacks, and re-run tests.")
         git("add", "-A")
-        git("commit", "-m", f"blue agent: {target_name}")
+        git("commit", "--allow-empty", "-m", f"blue agent: {target_name}")
 
     git("checkout", "main")
 
