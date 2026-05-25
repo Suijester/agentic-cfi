@@ -508,7 +508,7 @@ def policy_to_llvm_pass(c_files, policy_file: str) -> dict:
         }
 
     # convert IR to binary
-    result = subprocess.run(["clang", str(cfi_ll), "-o", str(binary)], capture_output = True, text = True)
+    result = subprocess.run(["clang", str(cfi_ll), "-o", str(binary), "-lm"], capture_output = True, text = True)
     if result.returncode != 0:
         return {
             "ok": False,
