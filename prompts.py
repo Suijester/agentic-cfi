@@ -32,10 +32,20 @@ After instrumenting CFI checks, think adversarially about your placement:
 1. Could an external caller invoke the indirect call without going through your check?
 2. If the check is only in main() or a single caller, it can be bypassed.
 
+Function pointers can come from:
+1. Direct definitions in source files
+2. Struct initializers (e.g., {"name", function_ptr, ...} entries in lookup tables)
+3. External library functions declared with extern (e.g., math library: sin, cos, sqrt)
+4. Functions registered via the program's public API (e.g., user-provided callbacks)
+
+You MUST check all C files in the target, not just the one containing the indirect call.
+For functions referenced in struct initializers that look like dispatch tables, include ALL of them as candidates.
+
 When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
 
 For each indirect call site, only include functions in allowed targets that are actually assigned to that function pointer somewhere in the source code (via direct assignment, struct initializer, etc.). 
-For generic dispatcher patterns (interpreters, evaluators, virtual dispatch), the indirect call site receives a function pointer from a data structure. The allowed_targets at each site must include every function that could be stored in that pointer slot across all program inputs.
+For generic dispatcher patterns (interpreters, evaluators, virtual dispatch), the indirect call site receives a function pointer from a data structure. T
+he allowed_targets at each site must include every function that could be stored in that pointer slot across all program inputs. Analyze arity as well, and ensure sites are tied properly.
 For indirect call sites inside generic dispatch functions (e.g., interpreters, virtual method invokers), the allowed_targets must be the union of every function that could be assigned to the function pointer at that site.
 
 If tests indicate that an attack was NOT blocked, immediately tighten your target set by removing the function that was reached during the attack, rewrite the file, and retest. 
