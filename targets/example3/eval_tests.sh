@@ -13,8 +13,8 @@ fi
 
 # make routes struct table point to debug_dump, then call dispatch
 cat > /tmp/example3_attack.c << 'EOF'
-#include "../targets/example3/handlers.c"
-#include "../targets/example3/dispatch.c"
+#include "handlers.c"
+#include "dispatch.c"
 
 int main(void) {
     routes[0].handler_function = debug_dump;  // backdoor swap
@@ -24,7 +24,7 @@ int main(void) {
 EOF
 
 # compile with policy file and cfi pass
-clang -S -emit-llvm /tmp/example3_attack.c -o /tmp/example3_attack.ll 2>/dev/null
+clang -S -emit-llvm -I "$DIR" /tmp/example3_attack.c -o /tmp/example3_attack.ll
 opt -load-pass-plugin=./cfi_pass.dylib -passes=cfi-enforce \
     -cfi-policy="$POLICY" /tmp/example3_attack.ll -S -o /tmp/example3_attack_cfi.ll 2>/dev/null
 clang /tmp/example3_attack_cfi.ll -o "$BIN" 2>/dev/null
