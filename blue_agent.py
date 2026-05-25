@@ -12,6 +12,8 @@ from prompts import BLUE_PROMPT
 from dotenv import load_dotenv
 import argparse
 from schemas import TOOL_SCHEMAS
+import time
+from openai import RateLimitError
 
 load_dotenv()
 
@@ -62,11 +64,20 @@ def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):
         })
 
     for step in range(max_steps):
-        response = client.chat.completions.create(
-            model = "gpt-4o",
-            messages = messages,
-            tools = BLUE_SCHEMAS,
-        )
+        for attempt in range(5):
+            try:
+                response = client.chat.completions.create(
+                    model = "gpt-4o",
+                    messages = messages,
+                    tools = BLUE_SCHEMAS,
+                )
+                break
+            except RateLimitError as e:
+                wait = max(2 ** attempt, 30)
+                print(f"Rate limited, sleeping {wait}s")
+                time.sleep(wait)
+        else:
+            raise RuntimeError("Hit rate limit 5 times in a row")
 
         msg = response.choices[0].message
         messages.append(msg)
