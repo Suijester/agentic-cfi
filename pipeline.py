@@ -20,6 +20,8 @@ def run_pipeline(target_dir: str):
     result = evaluate(target_dir)
     if (result.get("passed") == False):
         print("Blue agent failed to properly analyze target directory.")
+    else:
+        print("Blue agent successfully protected code.")
 
     git("checkout", "main")
 
