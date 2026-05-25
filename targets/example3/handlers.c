@@ -5,7 +5,7 @@ void handle_get(const char* req) {
 }
 
 void handle_post(const char* req) {
-    puts("handled the POST requsest");
+    puts("handled the POST request");
 }
 
 void handle_put(const char* req) {
