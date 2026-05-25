@@ -244,6 +244,22 @@ TOOL_SCHEMAS_LIST = [
             }
         }
     },
+
+    # FIND_ADDRESS_TAKEN_FUNCTIONS
+    {
+        "type": "function",
+        "function" : {
+            "name": "find_address_taken_functions",
+            "description": "Returns the set of all functions in the linked IR that have addresses taken anywhere in the program (struct initializers, etc.). Any legitimate indirect call target must appear in this list.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "ll_file": {"type": "string", "description": "Path to the .ll file"},
+                },
+                "required": ["ll_file"]
+            }
+        }
+    },
 ]
 
 TOOL_SCHEMAS = {

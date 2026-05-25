@@ -6,7 +6,7 @@ from tools import (
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
     run_tests, dump_clang_ast, write_log,
-    write_policy, compile_llvm_pass, policy_to_llvm_pass
+    write_policy, compile_llvm_pass, policy_to_llvm_pass, find_address_taken_functions
 )
 from prompts import BLUE_PROMPT
 from dotenv import load_dotenv
@@ -32,6 +32,7 @@ TOOLS = {
     "write_policy": write_policy,
     "compile_llvm_pass": compile_llvm_pass,
     "policy_to_llvm_pass": policy_to_llvm_pass,
+    "find_address_taken_functions": find_address_taken_functions,
 }
 
 BLUE_SCHEMAS = [TOOL_SCHEMAS[t] for t in [
@@ -39,7 +40,7 @@ BLUE_SCHEMAS = [TOOL_SCHEMAS[t] for t in [
     "find_indirect_calls", "find_function_declarations", 
     "find_function_pointer_typedefs", "find_function_pointer_declarations",
     "find_pointer_assignments", "run_tests", "write_log",
-    "write_policy", "compile_llvm_pass", "policy_to_llvm_pass"
+    "write_policy", "compile_llvm_pass", "policy_to_llvm_pass", "find_address_taken_functions"
 ]]
 
 def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):
