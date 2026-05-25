@@ -30,10 +30,21 @@ int main(int argc, char** argv) {
     int a = 10;
     int b = 10;
 
-    if (strcmp(mode, "add") == 0) return with_logging(add, a, b);
-    if (strcmp(mode, "sub") == 0) return with_logging(sub, a, b);
-    if (strcmp(mode, "mul") == 0) return with_logging(mul, a, b);
+    if (strcmp(mode, "add") == 0) {
+        with_logging(add, a, b);
+        return 0;
+    }
+
+    if (strcmp(mode, "sub") == 0) {
+        with_logging(sub, a, b);
+        return 0;
+    }
+
+    if (strcmp(mode, "mul") == 0) {
+        with_logging(mul, a, b);
+        return 0;
+    }
 
     puts("unknown operation");
-    return 0;
+    return 1;
 }
