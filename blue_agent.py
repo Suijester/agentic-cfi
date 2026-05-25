@@ -96,7 +96,6 @@ def run_blue_agent(target_dir: str, max_steps: int = 20, feedback: str = None):
         # agent is done this step :)
         else:
             print(f"[Agent done]")
-            print(f"{msg.content}")
             return msg.content
     
     print("Agent hit max step count :(")
