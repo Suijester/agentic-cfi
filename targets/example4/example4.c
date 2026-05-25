@@ -35,5 +35,5 @@ int main(int argc, char** argv) {
     if (strcmp(mode, "mul") == 0) return with_logging(mul, a, b);
 
     puts("unknown operation");
-    return 1;
+    return 0;
 }
