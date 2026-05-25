@@ -110,22 +110,55 @@ def compile_to_llvm(c_file: str, out_dir: str = "outputs") -> dict:
         "stderr": result.stderr,
     }
 
-def find_indirect_calls(ll_file: str) -> list[str]:
+def find_indirect_calls(ll_file: str) -> list[dict]:
     text = Path(ll_file).read_text(errors = "ignore")
     indirect_calls = []
+
+    current_function = None
+    call_index = 0
 
     for i, line in enumerate(text.splitlines(), start = 1):
         line = line.strip()
 
+        # entering function
+        if line.startswith("define ") and "@" in line:
+            at_pos = line.index("@")
+            paren_pos = line.find("(", at_pos)
+
+            if (paren_pos != -1):
+                current_function = line[at_pos + 1 : paren_pos]
+                call_index = 0
+            continue
+
+        # leaving function
+        if current_function is not None and line == "}":
+            current_function = None
+            continue
+
+        if current_function is None:
+            continue
+
         if " call " in line or line.startswith("call "):
             call_type = line.split("call", 1)[1]
             if "@" not in call_type[:call_type.rfind("(")]:
-                indirect_calls.append(f"{ll_file}:{i}: {line}")
+                indirect_calls.append({
+                    "caller": current_function,
+                    "call_index": call_index,
+                    "ir_snippet": line,
+                    "location": f"{ll_file}:{i}",
+                })
+                call_index += 1
 
         elif " invoke " in line or line.startswith("invoke "):
             invoke_type = line.split("invoke", 1)[1]
             if "@" not in invoke_type[:invoke_type.rfind("(")]:
-                indirect_calls.append(f"{ll_file}:{i}: {line}")
+                indirect_calls.append({
+                    "caller": current_function,
+                    "call_index": call_index,
+                    "ir_snippet": line,
+                    "location": f"{ll_file}:{i}",
+                })
+                call_index += 1
     
     return indirect_calls
 
