@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-BIN="bin/example3_cfi"
+BIN="bin/example4_cfi"
 
 if [ ! -f "$BIN" ]; then
     echo "ERROR: hardened binary not found at $BIN"
