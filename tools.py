@@ -430,7 +430,7 @@ def policy_to_llvm_pass(c_files, policy_file: str) -> dict:
         }
     
 
-    stem = Path(c_files[0]).stem
+    stem = Path(c_files[0]).parent.name
     target_dir = str(Path(c_files[0]).parent)
     bin_dir = Path(target_dir) / "bin"
     bin_dir.mkdir(exist_ok = True)
