@@ -16,6 +16,11 @@ def run_pipeline(target_dir: str):
 
     git("add", "-A")
     git("commit", "--allow-empty", "-m", f"blue agent: {target_name}")
+
+    result = evaluate(target_dir)
+    if (result.get("passed") == False):
+        printf("Blue agent failed to properly analyze target directory.")
+
     git("checkout", "main")
 
 def clean_branches():
