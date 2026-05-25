@@ -13,7 +13,7 @@ def run_pipeline(target_dir: str):
     git("checkout", "main")
 
     git("checkout", "-B", f"blue/{target_name}")
-    run_blue_agent(target_dir)
+    run_blue_agent(target_dir, 50)
 
     git("add", "-A")
     git("commit", "--allow-empty", "-m", f"blue agent: {target_name}")

@@ -32,6 +32,7 @@ After instrumenting CFI checks, think adversarially about your placement:
 When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
 
 For each indirect call site, only include functions in allowed targets that are actually assigned to that function pointer somewhere in the source code (via direct assignment, struct initializer, etc.). 
+For indirect call sites inside generic dispatch functions (e.g., interpreters, virtual method invokers), the allowed_targets must be the union of every function that could be assigned to the function pointer at that site.
 
 If tests indicate that an attack was NOT blocked, immediately tighten your target set by removing the function that was reached during the attack, rewrite the file, and retest. 
 Do not stop after a failed test — iterate until the policy passes or you've exhausted options.
