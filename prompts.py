@@ -25,6 +25,9 @@ Policy format: each rule is {"caller": "<function>", "call_index": <N>, "allowed
 
 You may ONLY run and not view tests.sh, never run eval_tests.sh. Those are HIDDEN tests.
 
+If tests.sh fails (legitimate tests return wrong output or abort): allowed_targets is TOO NARROW. Add the missing function to allowed_targets.
+Never reduce allowed_targets in response to a failing functional test.
+
 After instrumenting CFI checks, think adversarially about your placement:
 1. Could an external caller invoke the indirect call without going through your check?
 2. If the check is only in main() or a single caller, it can be bypassed.
@@ -32,6 +35,7 @@ After instrumenting CFI checks, think adversarially about your placement:
 When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
 
 For each indirect call site, only include functions in allowed targets that are actually assigned to that function pointer somewhere in the source code (via direct assignment, struct initializer, etc.). 
+For generic dispatcher patterns (interpreters, evaluators, virtual dispatch), the indirect call site receives a function pointer from a data structure. The allowed_targets at each site must include every function that could be stored in that pointer slot across all program inputs.
 For indirect call sites inside generic dispatch functions (e.g., interpreters, virtual method invokers), the allowed_targets must be the union of every function that could be assigned to the function pointer at that site.
 
 If tests indicate that an attack was NOT blocked, immediately tighten your target set by removing the function that was reached during the attack, rewrite the file, and retest. 
