@@ -1,5 +1,6 @@
 from blue_agent import run_blue_agent
 from eval_tools import evaluate
+from tools import run_tests
 import argparse
 import subprocess
 
@@ -22,6 +23,12 @@ def run_pipeline(target_dir: str):
         print("Blue agent failed to properly analyze target directory.")
     else:
         print("Blue agent successfully protected code.")
+
+    result = run_tests(target_dir)
+    if (result.get("ok") == False):
+        print("Blue agent has too narrow target set.")
+    else:
+        print("Blue agent allows correct execution of functions.")
 
     git("checkout", "main")
 

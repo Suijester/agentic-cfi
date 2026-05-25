@@ -28,7 +28,6 @@ You may ONLY run and not view tests.sh, never run eval_tests.sh. Those are HIDDE
 After instrumenting CFI checks, think adversarially about your placement:
 1. Could an external caller invoke the indirect call without going through your check?
 2. If the check is only in main() or a single caller, it can be bypassed.
-3. Best practice: wrap every indirect call site in a dedicated guard/dispatch function that validates the target before calling. Replace all direct uses of the indirect call with calls to the guard function.
 
 When constructing the initial target set, prefer the tightest plausible policy. Attempt to only include functions that are assigned in normal paths.
 

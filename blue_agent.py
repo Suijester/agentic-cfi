@@ -5,7 +5,7 @@ from tools import (
     compile_to_llvm, find_indirect_calls,
     find_function_declarations, find_function_pointer_typedefs,
     find_function_pointer_declarations, find_pointer_assignments,
-    write_file, run_tests, dump_clang_ast, write_log,
+    run_tests, dump_clang_ast, write_log,
     write_policy, compile_llvm_pass, policy_to_llvm_pass
 )
 from prompts import BLUE_PROMPT
@@ -25,7 +25,6 @@ TOOLS = {
     "find_function_pointer_typedefs": find_function_pointer_typedefs,
     "find_function_pointer_declarations": find_function_pointer_declarations,
     "find_pointer_assignments": find_pointer_assignments,
-    "write_file": write_file,
     "run_tests": run_tests,
     "write_log": write_log,
     "write_policy": write_policy,
@@ -37,7 +36,7 @@ BLUE_SCHEMAS = [TOOL_SCHEMAS[t] for t in [
     "list_c_files", "read_file", "compile_to_llvm",
     "find_indirect_calls", "find_function_declarations", 
     "find_function_pointer_typedefs", "find_function_pointer_declarations",
-    "find_pointer_assignments", "write_file", "run_tests", "write_log",
+    "find_pointer_assignments", "run_tests", "write_log",
     "write_policy", "compile_llvm_pass", "policy_to_llvm_pass"
 ]]
 
