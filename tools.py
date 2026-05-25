@@ -521,6 +521,36 @@ def policy_to_llvm_pass(c_files, policy_file: str) -> dict:
         "binary": str(binary)
     }
 
+def find_address_taken_functions(ll_file: str) -> list[str]:
+    text = Path(ll_file).read_text(errors = "ignore")
+    # look at all defines and declares (means it's a function declared either externally or internally)
+    function_names = set()
+    for line in text.splitlines():
+        line = line.strip()
+        if not (line.startswith("define ") or line.startswith("declare ")):
+            continue
+        
+        at_pos = line.find("@")
+        paren_pos = line.find("(", at_pos)
+        if at_pos != -1 and paren_pos != -1:
+            function_names.add(line[at_pos + 1: paren_pos])
+
+    address_taken = set()
+    for line in text.splitlines():
+        for m in re.finditer(r'@([\w.]+)', line):
+            name = m.group(1)
+            if name not in function_names or name.startswith("llvm."):
+                continue
+
+            prefix = line[:m.start()]
+            keyword_pos = max(prefix.rfind("call"), prefix.rfind("invoke"))
+            if keyword_pos != -1 and "(" not in prefix[keyword_pos:] and "@" not in prefix[keyword_pos]:
+                continue
+
+            address_taken.add(name)
+
+    return sorted(address_taken)
+
 # advanced tools 
 def generate_cfg(c_file: str):
     return
