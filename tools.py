@@ -419,27 +419,54 @@ def compile_llvm_pass() -> dict:
         "path": str(llvm_lib)
     }
 
-def policy_to_llvm_pass(c_file: str, policy_file: str) -> dict:
-    stem = Path(c_file).stem
-    target_dir = str(Path(c_file).parent)
+def policy_to_llvm_pass(c_files, policy_file: str) -> dict:
+    if isinstance(c_files, str):
+        c_files = [c_files]
+
+    if not c_files:
+        return {
+            "ok": False,
+            "error": "No C files were provided"
+        }
+    
+
+    stem = Path(c_files[0]).stem
+    target_dir = str(Path(c_files[0]).parent)
     bin_dir = Path(target_dir) / "bin"
     bin_dir.mkdir(exist_ok = True)
 
-    ll_file = bin_dir / f"{stem}.ll"
+    linked_ll_file = bin_dir / f"{stem}_linked.ll"
     cfi_ll = bin_dir / f"{stem}_cfi.ll"
     binary = bin_dir / f"{stem}_cfi"
 
-    # convert c to the IR representation
-    result = subprocess.run(["clang", "-S", "-emit-llvm", c_file, "-o", str(ll_file)], capture_output = True, text = True)
-    if result.returncode != 0:
-        return {
-            "ok": False,
-            "fail_stage": "compile_to_ir",
-            "stderr": result.stderr,
-        }
+    ll_files = []
+    for c_file in c_files:
+        ll_file = bin_dir / f"{Path(c_file).stem}.ll"
+
+        # convert c to the IR representation
+        result = subprocess.run(["clang", "-S", "-emit-llvm", c_file, "-o", str(ll_file)], capture_output = True, text = True)
+        if result.returncode != 0:
+            return {
+                "ok": False,
+                "fail_stage": "compile_to_ir",
+                "stderr": result.stderr,
+            }
+        ll_files.append(str(ll_file))
 
     # run the pass
-    result = subprocess.run(["opt", "-load-pass-plugin=./cfi_pass.dylib", "-passes=cfi-enforce", f"-cfi-policy={policy_file}", str(ll_file), "-S", "-o",str(cfi_ll)], capture_output = True, text = True)
+    if (len(ll_files) > 1):
+        result = subprocess.run(["llvm-link", "-S", *ll_files, "-o", str(linked_ll_file)], capture_output = True, text = True)
+        if (result.returncode != 0):
+            return {
+                "ok": False,
+                "fail_stage": "run_pass",
+                "stderr": result.stderr,
+            }
+        input_ll = linked_ll_file
+    else:
+        input_ll = ll_files[0]
+
+    result = subprocess.run(["opt", "-load-pass-plugin=./cfi_pass.dylib", "-passes=cfi-enforce", f"-cfi-policy={policy_file}", str(input_ll), "-S", "-o",str(cfi_ll)], capture_output = True, text = True)
     if result.returncode != 0:
         return {
             "ok": False,

@@ -237,10 +237,10 @@ TOOL_SCHEMAS_LIST = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "c_file": {"type": "string", "description": "Path to C source file"},
+                    "c_files": {"type": "array", "items": {"type": "string"}, "description": "List of paths to C files, must pass all .c files of the target directory"},
                     "policy_file": {"type": "string", "description": "Path to policy.json file"}
                 },
-                "required": ["c_file", "policy_file"]
+                "required": ["c_files", "policy_file"]
             }
         }
     },
