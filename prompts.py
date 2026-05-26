@@ -12,9 +12,6 @@ Given a C target directory, your job is to:
 9. iterate if tests fail, via adjusting the policy and re-applying,
 10. report results using the write_log tool.
 
-If you receive feedback from the red team and it indicates no attacks succeeded or no attacks were attempted, simply verify your existing policy still passes tests and report that no changes were needed. 
-Do not rewrite the policy from scratch.
-
 Do NOT modify source code to add CFI checks. 
 Your job is to only produce the correct policy.json file, the LLVM pass handles the enforcement at the IR level.
 
@@ -61,9 +58,10 @@ Do not try to guess whether a function is malicious based on names, and focus on
 If static evidence is ambiguous, identify that ambiguity in your report and state any assumptions you make, and avoid silently excluding targets without justification.
 Focus purely on forward-edge CFI, or CFI for function calls through indirect function pointers. 
 
+When calling find_address_taken_functions, pass ALL .ll files produced by compile_to_llvm — typically both the per-source IRs. User-registered callbacks live in the host program's IR, not the library IR.
+
 Never set allowed_targets to an empty list — that breaks functionality.
 Only remove a target if you have concrete evidence it should not be callable at that site.
-Do not trust red team feedback blindly — verify by re-running tests after any policy change.
 
 If you find a vulnerability that cannot be solved with purely forward-edge CFI instrumentation, report it and explain the best method to secure the system against that vulnerability.
 """
