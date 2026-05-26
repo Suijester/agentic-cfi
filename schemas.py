@@ -254,9 +254,13 @@ TOOL_SCHEMAS_LIST = [
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "ll_file": {"type": "string", "description": "Path to the .ll file"},
+                    "ll_files": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Paths to .ll files to analyze"
+                    },
                 },
-                "required": ["ll_file"]
+                "required": ["ll_files"]
             }
         }
     },

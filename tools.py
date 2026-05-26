@@ -522,8 +522,8 @@ def policy_to_llvm_pass(c_files, policy_file: str) -> dict:
         "binary": str(binary)
     }
 
-def find_address_taken_functions(ll_file: str) -> list[str]:
-    text = Path(ll_file).read_text(errors = "ignore")
+def find_address_taken_functions(ll_files: list[str]) -> list[str]:
+    text = "\n".join(Path(ll).read_text(errors = "ignore") for ll in ll_files)
     # look at all defines and declares (means it's a function declared either externally or internally)
     function_names = set()
     for line in text.splitlines():

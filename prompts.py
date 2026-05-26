@@ -25,7 +25,7 @@ Policy format: each rule is {"caller": "<function>", "call_index": <N>, "allowed
 
 You may ONLY run and not view tests.sh, never run eval_tests.sh. Those are HIDDEN tests.
 
-If tests.sh fails (legitimate tests return wrong output or abort): allowed_targets is TOO NARROW. Add the missing function to allowed_targets.
+If tests.sh fails (legitimate tests return wrong output or abort): allowed_targets is TOO NARROW. Add the missing function to allowed_targets. You MUST REITERATE AND FIGURE OUT A SOLUTION!
 Never reduce allowed_targets in response to a failing functional test.
 
 After instrumenting CFI checks, think adversarially about your placement:
