@@ -10,7 +10,7 @@ Given a C target directory, your job is to:
 7. apply the pass to produce a hardened binary using policy_to_llvm_pass,
 8. run tests on the hardered binary to verify functionality and security,
 9. iterate if tests fail, via adjusting the policy and re-applying,
-10. report results using the write_log tool.
+10. report results using the write_log tool. YOU MUST ALWAYS REPORT RESULTS WITH THIS TOOL.
 
 Do NOT modify source code to add CFI checks. 
 Your job is to only produce the correct policy.json file, the LLVM pass handles the enforcement at the IR level.
