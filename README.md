@@ -1,29 +1,16 @@
-Stuff to Do:
-- make more examples
-- create hidden harness for agents
-- add support for more forward-edge cases
-- create evaluation framework (false positive, # of fails before success, etc.)
-- Adversarial Agents (two phase)
-    - Policy Agent
-        - infers policy and instruments source
-    - Adversarial Agent
-        - inspect policy and generate attack tests
-        - can try targets outside allowed set, and uninstrumented call sites
-        - try same-signature unexpected functions
-        - try struct field overwrites, etc.
-        - metrics for agent
-            - number of attack attempts generated
-            - number blocked
-            - number succeeded
-            - number invalid / did not compile
-            - number of refinement rounds before success
-- after completion, make git diff file
-- add confidence metric (how confident agents are that they've solved vulnerabilities)
-    - if low confidence, secondary writeup as to why
-- make the write_file() not actually a write_file function
-    - make it output some .cfi file in json that'll edit the code
-    - or we can hook it into llvm pass (later)
-- better logging
-- make snapshotting better (use git, docker, smth)
-- be able to solve maybe a small subset of backward-edge cases
-- compare against clang CFI
+# Agentic CFI
+
+An agentic pipeline that generates Control-Flow Integrity policies for C programs. The agent analyzes indirect call sites utilizing IRs of programs, reasons about the semantics of the program statically and utilizes tests given by the user to dynamically verify execution, and then constructs a target set for every indirect call set of permissible functions to jump to.
+
+The agent then constructs a JSON file, which runs through an LLVM pass to generate a hardened binary that prevents forward-edge hijacking. We provide multiple sample test cases, as well as a real world test case against tinyexpr.
+
+## Quick Start
+```bash
+pip install -r requirements.txt
+echo "OPENAI_API_KEY=sk-..." > .env
+python3 pipeline.py targets/example1
+```
+
+## Acknowledgments
+ 
+We utilize [tinyexpr](https://github.com/codeplea/tinyexpr) by Lewis Van Winkle (under the zlib license), used as a real-world target.
