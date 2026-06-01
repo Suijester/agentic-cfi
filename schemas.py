@@ -174,9 +174,9 @@ TOOL_SCHEMAS_LIST = [
                 "type": "object",
                 "properties": {
                     "content": {"type": "string", "description": "New .log file content with report"},
-                    "log_filename": {"type": "string", "description": ".log file name to write into"}
+                    "target_dir": {"type": "string", "description": "Target directory passed to the agent (e.g. 'targets/example1'); log will be written to logs/<basename>.log"}
                 },
-                "required": ["content", "log_filename"]
+                "required": ["content", "target_dir"]
             }
         }
     },

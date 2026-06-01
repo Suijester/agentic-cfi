@@ -384,10 +384,11 @@ def run_tests(folder: str) -> dict:
         "stderr": results.stderr,
     }
 
-def write_log(content: str, log_filename: str) -> dict:
+def write_log(content: str, target_dir: str) -> dict:
     try:
-        Path("logs").mkdir(exist_ok = True)
-        log_path = Path("logs") / log_filename
+        Path("logs").mkdir(exist_ok=True)
+        target_name = Path(target_dir).name
+        log_path = Path("logs") / f"{target_name}.log"
         log_path.write_text(content)
         return {
             "ok": True,
