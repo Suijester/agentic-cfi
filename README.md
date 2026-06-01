@@ -4,12 +4,15 @@ An agentic pipeline that generates Control-Flow Integrity policies for C program
 
 The agent then constructs a JSON file, which runs through an LLVM pass to generate a hardened binary that prevents forward-edge hijacking. We provide multiple sample test cases, as well as a real world test case against tinyexpr.
 
-## Quick Start
+## Setup and Test
 ```bash
 pip install -r requirements.txt
 echo "OPENAI_API_KEY=sk-..." > .env
 python3 pipeline.py targets/example1
 ```
+
+## Output Data
+The agent writes its log in `logs/<basename>.log`, where `<basename>` is the name of the directory that the pipeline was run on. You can find the policy.json file in the target directory of the pipeline by running `git checkout blue/<basename>`, as we use git as a snapshotting feature. The hardened binary can also be found this way.
 
 ## Acknowledgments
  
